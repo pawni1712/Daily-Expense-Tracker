@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Expense Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDKXK59RluOej3qrlrvT571eX_309KhSSs",
+      authDomain: "daily-expense-tracker-99cce.firebaseapp.com",
+      projectId: "daily-expense-tracker-99cce",
+      storageBucket: "daily-expense-tracker-99cce.appspot.com",
+      messagingSenderId: "179499798996",
+      appId: "1:179499798996:web:5cb073e1bab8c25d8b0641",
+      measurementId: "G-89CV3VPV7E"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+</head>
+<body>
+
+<!-- 🔐 Auth Container -->
+<div id="auth-container" class="auth-box">
+  <h2>Welcome Back!</h2>
+
+  <!-- 🔑 Login Form -->
+  <form id="login-form">
+    <input type="email" id="login-email" placeholder="Email" required />
+    <div class="password-wrapper">
+      <input type="password" id="login-password" placeholder="Password" required />
+      <i class="fa-solid fa-eye toggle-password" toggle="#login-password"></i>
+    </div>
+    <button type="submit">Login</button>
+  </form>
+
+  <!-- OR Divider -->
+  <div class="or-divider">OR</div>
+
+  <!-- 🔵 Google Login Button -->
+  <button id="google-login" class="google-btn">
+    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Icon" style="width:16px; margin-right:8px;" />
+    Sign in with Google
+  </button>
+
+  <p>Don't have an account? <a href="#" id="show-signup">Sign up</a></p>
+
+  <!-- 📝 Signup Form -->
+  <form id="signup-form" style="display: none; margin-top: 20px;">
+    <input type="email" id="signup-email" placeholder="Email" required />
+    <div class="password-wrapper">
+      <input type="password" id="signup-password" placeholder="Password" required />
+      <i class="fa-solid fa-eye toggle-password" toggle="#signup-password"></i>
+    </div>
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <p style="display: none;" id="show-login-container">
+    Already have an account? <a href="#" id="show-login">Login</a>
+  </p>
+</div>
+
+<!-- 📊 Tracker Container -->
+<div id="tracker-container" style="display: none;">
+  <h1 class="text-3xl font-bold mb-6">Daily Expense Tracker</h1>
+
+  <form id="expense-form">
+    <input type="number" id="amount" placeholder="Enter Amount (₹)" required class="border p-2 rounded-md w-full mb-2" />
+    <select id="category" required class="border p-2 rounded-md w-full mb-2">
+      <option value="" disabled selected>Select Category</option>
+      <option value="Food">Food</option>
+      <option value="Travel">Travel</option>
+      <option value="Recharge">Recharge</option>
+      <option value="Shopping">Shopping</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <div class="date-wrapper">
+      <input type="date" id="date" required class="custom-date" />
+      <button type="button" class="calendar-icon" onclick="document.getElementById('date').showPicker?.()">
+        <i class="fas fa-calendar-alt"></i>
+      </button>
+    </div>
+
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md w-full mt-2">Add Expense</button>
+  </form>
+
+  <button id="csv-button" onclick="downloadCSV()" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md mt-4">Export CSV</button>
+
+  <!-- 🔍 Filters -->
+  <div id="filters" style="margin: 20px 0;">
+    <select id="filter-category">
+      <option value="all">Filter by Category</option>
+      <option value="Food">Food</option>
+      <option value="Travel">Travel</option>
+      <option value="Recharge">Recharge</option>
+      <option value="Shopping">Shopping</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <select id="filter-month">
+      <option value="all">Filter by Month</option>
+      <option value="Jan">Jan</option>
+      <option value="Feb">Feb</option>
+      <option value="Mar">Mar</option>
+      <option value="Apr">Apr</option>
+      <option value="May">May</option>
+      <option value="Jun">Jun</option>
+      <option value="Jul">Jul</option>
+      <option value="Aug">Aug</option>
+      <option value="Sep">Sep</option>
+      <option value="Oct">Oct</option>
+      <option value="Nov">Nov</option>
+      <option value="Dec">Dec</option>
+    </select>
+
+    <button id="clear-filters" style="padding: 6px 12px; margin-top: 5px; border-radius: 6px; border: none; background-color: #e74c3c; color: white; cursor: pointer;">
+      ❌ Clear Filters
+    </button>
+  </div>
+
+  <h2 class="text-xl font-semibold mb-2 mt-4">Expense History</h2>
+  <ul id="expense-list"></ul>
+  <h3 id="total">📟 Total Spent: ₹0</h3>
+
+  <!-- 📈 Charts -->
+  <div class="chart-container">
+    <div class="chart-box">
+      <h3>Category-wise</h3>
+      <canvas id="expense-chart" width="160" height="160"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Monthly Spending</h3>
+      <canvas id="bar-chart" width="260" height="280"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- 🔘 Top-right Controls -->
+<div id="top-controls" style="position: fixed; top: 20px; right: 20px; display: flex; gap: 12px; align-items: center; z-index: 1000;">
+  <button id="logout-btn" title="Logout" style="display: none;">
+    <i class="fas fa-sign-out-alt"></i>
+  </button>
+  <button id="toggle-theme" title="Toggle Theme" style="display: flex; align-items: center; gap: 6px; font-size: 14px; padding: 4px 10px; background-color: #ddd; color: #333; border: none; border-radius: 5px; cursor: pointer;">
+    🌙 <span>Dark Mode</span>
+  </button>
+</div>
+
+<!-- 📅 Auto Set Max Date -->
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("date").setAttribute("max", today);
+  });
+</script>
+
+<!-- 👁️ Password Visibility Toggle -->
+<script>
+  document.querySelectorAll(".toggle-password").forEach(toggle => {
+    toggle.addEventListener("click", function () {
+      const input = document.querySelector(this.getAttribute("toggle"));
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      this.classList.toggle("fa-eye");
+      this.classList.toggle("fa-eye-slash");
+    });
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
