@@ -92,11 +92,12 @@ firebase deploy
 
 ---
 
-##  Charts Preview
+## 📊 Charts Preview
 
-| Pie Chart  | Bar Chart  |
-|-------------|--------------|
-| ![Pie Chart](./public/images/Screenshot%202025-07-07%20211237.png) | ![Bar Chart](./public/images/Screenshot%202025-07-07%20211301.png) |
+| Pie Chart | Bar Chart |
+|-----------|-----------|
+| ![Pie Chart](public/images/piechart.png.png) | ![Bar Chart](public/images/barchart.png.png) |
+
 
 
 ---
