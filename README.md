@@ -94,9 +94,9 @@ firebase deploy
 
 ## 📊 Charts Preview
 
-| Pie Chart | Bar Chart |
-|-----------|-----------|
-| ![Pie Chart](public/images/piechart.png.png) | ![Bar Chart](public/images/barchart.png.png) |
+| Pie Chart  | Bar Chart  |
+| ------------ | ------------ |
+| ![Pie Chart](./public/images/piechart.png.png) | ![Bar Chart](./public/images/barchart.png.png) |
 
 
 
