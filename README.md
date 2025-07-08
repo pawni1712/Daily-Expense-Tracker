@@ -20,6 +20,11 @@ The **Daily Expense Tracker** is a lightweight and intuitive web application tha
 * View **interactive Pie and Bar Charts** of monthly/weekly spending.
 * Toggle between **Dark & Light mode**.
 
+
+##  Live Demo
+
+Try out the hosted app here: [https://daily-expense-tracker-99cce.web.app](https://daily-expense-tracker-99cce.web.app)
+
 ---
 
 ##  Key Features
@@ -96,7 +101,7 @@ firebase deploy
 
 | Pie Chart  | Bar Chart  |
 | ------------ | ------------ |
-| ![Pie Chart](./public/images/piechart.png.png) | ![Bar Chart](./public/images/barchart.png.png) |
+| ![Pie Chart](public/images/piechart.png) | ![Bar Chart](public/images/barchart.png) |
 
 
 
